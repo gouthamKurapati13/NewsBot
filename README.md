@@ -2,7 +2,7 @@
 
 A modern, responsive web application that provides real-time news updates, sports information, and stock market insights using AI-powered summarization and natural language processing.
 
-![NewsBot Interface](static/Images/NewsBot%20Icon.jpg)
+![NewsBot Interface](static/Images/robot1.png)
 
 ## ✨ Features
 
