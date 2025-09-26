@@ -12,7 +12,7 @@ app = Flask(__name__)
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 model_name = "MaRiOrOsSi/t5-base-finetuned-question-answering"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
 model = AutoModelWithLMHead.from_pretrained(model_name)
 
 knowledgeBase = ""
@@ -23,28 +23,68 @@ def getHeadlines():
     session = HTMLSession()
     url = "https://www.livemint.com/"
     req = session.get(url)
+    
+    # Try multiple selectors for articles
     articles = req.html.find('h3 a')
+    if not articles:
+        articles = req.html.find('h2 a')
+    if not articles:
+        articles = req.html.find('h1 a')
+    if not articles:
+        articles = req.html.find('a[href*="/news/"]')
+    
     newslist = []
     cnt = 0
-    for article in articles:
-        links = list(article.absolute_links)
-        req = session.get(links[0])
-        title = req.html.find('#article-0', first=True)
-        content = req.html.find('.storyPage_storyContent__m_MYl', first=True)
+    
+    for article in articles[:10]:  # Limit to first 10 articles
         try:
-            if title and content:
-                summary = summarizer(content.text, max_length=content.text.count(" "), do_sample=False)
+            links = list(article.absolute_links)
+            if not links:
+                continue
+                
+            article_url = links[0]
+            article_req = session.get(article_url)
+            
+            # Try multiple selectors for title
+            title = article_req.html.find('#article-0', first=True)
+            if not title:
+                title = article_req.html.find('h1', first=True)
+            if not title:
+                title = article_req.html.find('.headline', first=True)
+            
+            # Try multiple selectors for content
+            content = article_req.html.find('.storyPage_storyContent__m_MYl', first=True)
+            if not content:
+                content = article_req.html.find('.story-content', first=True)
+            if not content:
+                content = article_req.html.find('.article-content', first=True)
+            if not content:
+                # Get all paragraphs as fallback
+                paragraphs = article_req.html.find('p')
+                if paragraphs and len(paragraphs) > 2:
+                    content_text = ' '.join([p.text for p in paragraphs[:5] if p.text.strip()])
+                    if len(content_text) > 100:  # Only if we have substantial content
+                        content = type('obj', (object,), {'text': content_text})
+            
+            if title and content and hasattr(content, 'text') and len(content.text.strip()) > 50:
+                # Limit content length for summarization
+                content_text = content.text[:2000]  # Limit to prevent memory issues
+                word_count = len(content_text.split())
+                max_length = min(150, max(50, word_count // 4))  # Dynamic max length
+                
+                summary = summarizer(content_text, max_length=max_length, min_length=30, do_sample=False)
                 if summary:
-                    content = summary[0]['summary_text']
-                    knowledgeBase += title.text + "\n" + content + "\n\n"
-                    print("----"*100)
-                    print(content)
-                    newslist.append({"title":title.text,"body": content})
+                    summary_text = summary[0]['summary_text']
+                    knowledgeBase += title.text + "\n" + summary_text + "\n\n"
+                    newslist.append({"title": title.text, "body": summary_text})
                     cnt += 1
-            if cnt == 3:
+                    
+            if cnt >= 3:  # Stop after getting 3 good articles
                 break
-        except:
-            pass
+                
+        except Exception as e:
+            continue
+    
     return newslist
 
 def getSportsNews():

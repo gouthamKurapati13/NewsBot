@@ -4,193 +4,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NewsBot</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>NewsBot - AI-Powered News Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="shortcut icon" href="../static/Images/NewsBot Icon.jpg" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
         body {
-            background-color: #000000;
-            display: flex;
-            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
             overflow: hidden;
         }
 
-        .side-img img {
-            width: 40vw;
-            height: 30rem;
-        }
-
-        .side-img h1 {
-            font-size: 5rem;
-            color: white;
-            text-align: center;
-        }
-
-        .side-img h2 {
-            color: white;
-            text-align: center;
-        }
-
-        .chat-container {
-            background-color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            height: 100%;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            width: 50vw;
-            border-radius: 1rem;
-            margin: auto;
-            margin-top: 1rem;
-            margin-bottom: 21vh;
-            padding-top: 5px;
-            padding-bottom: 3rem;
-        }
-
-        .bot-message {
-            background-color: #e5e5ea;
-            color: #1f2937;
-        }
-
-        .user-message {
-            background-color: #007bff;
-            color: #ffffff;
-        }
-
-        .message-icon {
-            width: 24px;
-            height: 24px;
-            margin-left: 5px;
-            margin-right: 5px;
-        }
-
-        .function-button {
-            background-color: #e2e8f0;
-            color: #1f2937;
-        }
-
-        .news-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-        }
-
-        .know-more-button {
-            background-color: #007bff;
-            color: #ffffff;
-            border-radius: 0.375rem;
-        }
-
-        .fixed-items {
-            position: fixed;
-            bottom: 0;
-            background-color: #ffffff;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-            margin: 0;
-            padding: 1rem;
-            display: block;
-            width: inherit;
-        }
-
-        .p-4 {
-            padding: 0 !important;
-            padding-top: 1rem !important;
-        }
-
-        .chat-window {
+        .welcome-section {
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            height: 100%;
-            width: 50vw;
+            align-items: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
-        .bot-loading .spinner {
-            width: 16px; /* Increased size */
-            height: 16px; /* Increased size */
+        .welcome-section img {
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            margin: auto;
-            background: linear-gradient(to bottom right, #4d9ef6, #2b7ce9);
-            position: relative;
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-            animation: spin 1s infinite linear;
+            object-fit: cover;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: float 3s ease-in-out infinite;
         }
 
-        .bot-loading .spinner::before,
-        .bot-loading .spinner::after {
-            content: "";
-            position: absolute;
-            left: -7px; /* Adjusted positioning */
-            top: -7px; /* Adjusted positioning */
-            width: 100%;
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .welcome-section h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
             height: 100%;
+            max-height: calc(100vh - 40px);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 1.5rem 2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .chat-header img {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: inherit;
-            opacity: 0.5;
-            transform: rotate(-45deg) scale(1.2);
-            animation: spin 1s infinite linear;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
-        .bot-loading .spinner::after {
-            animation-delay: 0.25s;
+        .chat-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
         }
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scroll-behavior: smooth;
+            min-height: 0;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            max-width: 80%;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-
-            100% {
-                transform: rotate(360deg);
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        input:disabled {
-            cursor: not-allowed;
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
         }
 
-        button:disabled {
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-content {
+            background: #f8fafc;
+            padding: 0.875rem 1.125rem;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+        }
+
+        .message-content p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .message-content b {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .message.user .message-content b {
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.5rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #6b7280;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .chat-input-section {
+            padding: 1.5rem 2rem;
+            background: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .function-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .function-button {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 1px solid #cbd5e1;
+            color: #374151;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .function-button:hover {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .function-button:active {
+            transform: translateY(0);
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            padding: 0.5rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-container:focus-within {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .chat-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            background: transparent;
+        }
+
+        .chat-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .send-button:disabled {
+            background: #9ca3af;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+                padding: 10px;
+                height: 100vh;
+                overflow: hidden;
+            }
+            
+            .welcome-section {
+                display: none;
+            }
+            
+            .chat-section {
+                order: 1;
+                flex: 1;
+                min-height: 0;
+                height: calc(100vh - 20px);
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 8px;
+            }
+            
+            .welcome-section {
+                display: none;
+            }
+            
+            .chat-section {
+                height: calc(100vh - 16px);
+                border-radius: 16px;
+            }
+            
+            .chat-header {
+                padding: 1rem 1.5rem;
+            }
+            
+            .chat-container {
+                padding: 1rem 1.5rem;
+            }
+            
+            .chat-input-section {
+                padding: 1rem 1.5rem;
+            }
+            
+            .function-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .function-button {
+                padding: 0.6rem 0.75rem;
+                font-size: 0.75rem;
+                border-radius: 8px;
+            }
+            
+            .function-button i {
+                font-size: 0.75rem;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 5px;
+                height: 100vh;
+            }
+            
+            .welcome-section {
+                display: none;
+            }
+            
+            .chat-section {
+                height: calc(100vh - 10px);
+                border-radius: 12px;
+            }
+            
+            .chat-header {
+                padding: 0.75rem 1rem;
+                border-radius: 12px 12px 0 0;
+            }
+            
+            .chat-header h2 {
+                font-size: 1.1rem;
+            }
+            
+            .chat-container {
+                padding: 0.75rem 1rem;
+                gap: 0.75rem;
+            }
+            
+            .chat-input-section {
+                padding: 0.75rem 1rem;
+                border-radius: 0 0 12px 12px;
+            }
+            
+            .function-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .function-button {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.7rem;
+                border-radius: 8px;
+                font-weight: 500;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .function-button i {
+                font-size: 0.7rem;
+                margin-right: 0.3rem;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+            
+            .message-content {
+                font-size: 0.9rem;
+                padding: 0.75rem 1rem;
+            }
+            
+            .input-container {
+                border-radius: 20px;
+            }
+            
+            .chat-input {
+                font-size: 0.9rem;
+                padding: 0.6rem 1rem;
+            }
         }
     </style>
 </head>
 
-<body class="antialiased font-sans">
+<body>
+    <div class="main-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <img src="/static/Images/robot1.png" alt="NewsBot AI Assistant">
+            <h1>NewsBot</h1>
+            <p>Your intelligent AI-powered news assistant. Get the latest headlines, sports updates, and stock market insights in real-time.</p>
+        </div>
 
-    <div class="side-img">
-        <img src="/static/Images/robot1.png" alt="">
-        <h1>NewsBot</h1>
-    </div>
-    <div class="chat-window">
-        <div class="chat-container">
-            <div class="flex flex-col space-y-4" id="chat-messages">
-                <!-- Messages will be dynamically added here -->
-                <div class="flex items-start">
-                    <img src="/static/Images/NewsBot Icon.jpg" alt="NewsBot Icon" class="message-icon mr-2">
-                    <div class="bot-message rounded-lg p-3 max-w-xs">
-                        <p>Hello there! Welcome to NewsBotAI.</p>
+        <!-- Chat Section -->
+        <div class="chat-section">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <img src="/static/Images/NewsBot Icon.jpg" alt="NewsBot">
+                <div>
+                    <h2>NewsBot AI</h2>
+                    <div class="flex items-center gap-2 text-sm opacity-90">
+                        <div class="status-indicator"></div>
+                        <span>Online</span>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="fixed-items mt-auto">
-            <div class="grid grid-cols-2 gap-2 mb-4">
-                <button class="function-button rounded-lg p-2 text-sm font-semibold"
-                    onclick="sendQuery('Headlines')">Headlines</button>
-                <button class="function-button rounded-lg p-2 text-sm font-semibold"
-                    onclick="sportsNews()">Sports News</button>
-                <button class="function-button rounded-lg p-2 text-sm font-semibold"
-                    onclick="stockValues()">Stock Values</button>
-                <button class="function-button rounded-lg p-2 text-sm font-semibold"
-                    onclick="discussQuery()">Discuss</button>
+
+            <!-- Chat Messages -->
+            <div class="chat-container" id="chat-messages">
+                <div class="message">
+                    <img src="/static/Images/NewsBot Icon.jpg" alt="NewsBot" class="message-avatar">
+                    <div class="message-content">
+                        <p>👋 Hello there! Welcome to NewsBot AI. I'm here to help you stay updated with the latest news, sports, and market insights. Choose from the options below or ask me anything!</p>
+                    </div>
+                </div>
             </div>
-            <div class="flex items-center space-x-2">
-                <input type="text" id="user-query" placeholder="Message NewsBot..."
-                    class="border p-2 rounded-lg flex-1">
-                <button class="text-blue-500" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+
+            <!-- Chat Input Section -->
+            <div class="chat-input-section">
+                <div class="function-buttons">
+                    <button class="function-button" onclick="sendQuery('Headlines')">
+                        <i class="fas fa-newspaper"></i>
+                        Headlines
+                    </button>
+                    <button class="function-button" onclick="sportsNews()">
+                        <i class="fas fa-futbol"></i>
+                        Sports News
+                    </button>
+                    <button class="function-button" onclick="stockValues()">
+                        <i class="fas fa-chart-line"></i>
+                        Stock Values
+                    </button>
+                    <button class="function-button" onclick="discussQuery()">
+                        <i class="fas fa-comments"></i>
+                        Discuss
+                    </button>
+                </div>
+                <div class="input-container">
+                    <input type="text" id="user-query" placeholder="Ask me about news, sports, or stocks..." class="chat-input">
+                    <button class="send-button" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -206,14 +558,19 @@
         function addBotMessageLoader() {
             const chatMessages = document.getElementById('chat-messages');
             const botMessage = `
-            <div class="flex items-start bot-loading">
-                <img src="/static/Images/NewsBot Icon.jpg" alt="NewsBot Icon" class="message-icon mr-2">
-                <div class="bot-message rounded-lg p-3 max-w-xs">
-                    <span class="spinner"></span>
+            <div class="message bot-loading">
+                <img src="/static/Images/NewsBot Icon.jpg" alt="NewsBot" class="message-avatar">
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
                 </div>
             </div>
             `;
             chatMessages.insertAdjacentHTML('beforeend', botMessage);
+            scrollToBottom();
         }
 
         function removeBotMessageLoader() {
@@ -224,29 +581,35 @@
         }
 
         function addUserMessage(message) {
-            window.scrollBy(0, 100);
             document.getElementById('user-query').value = '';
             const chatMessages = document.getElementById('chat-messages');
             const userMessage = `
-                <div class="flex items-start justify-end">
-                    <div class="user-message rounded-lg p-3 max-w-xs">
+                <div class="message user">
+                    <img src="/static/Images/User Icon.jpg" alt="User" class="message-avatar">
+                    <div class="message-content">
                         <p>${message}</p>
                     </div>
-                    <img src="/static/Images/User Icon.jpg" alt="User Icon" class="message-icon ml-2">
                 </div>`;
             chatMessages.insertAdjacentHTML('beforeend', userMessage);
+            scrollToBottom();
         }
 
         function addBotMessage(message) {
             const chatMessages = document.getElementById('chat-messages');
             const botMessage = `
-                <div class="flex items-start">
-                    <img src="/static/Images/NewsBot Icon.jpg" alt="NewsBot Icon" class="message-icon mr-2">
-                    <div class="bot-message rounded-lg p-3 max-w-xs">
+                <div class="message">
+                    <img src="/static/Images/NewsBot Icon.jpg" alt="NewsBot" class="message-avatar">
+                    <div class="message-content">
                         <p>${message}</p>
                     </div>
                 </div>`;
             chatMessages.insertAdjacentHTML('beforeend', botMessage);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const chatContainer = document.getElementById('chat-messages');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         async function sendQuery(query) {
@@ -264,8 +627,9 @@
                     removeBotMessageLoader();
                     console.log(data.answer);
                     if (Array.isArray(data.answer) && data.answer.length > 0) {
-                        data.answer.forEach(answer => {
-                            addBotMessage("<b>" + answer['title'] + "</b>" + "<br\>" + answer['body']);
+                        addBotMessage("📰 Here are the latest headlines:");
+                        data.answer.forEach((answer, index) => {
+                            addBotMessage(`📌 <b>${answer['title']}</b><br><br>${answer['body']}`);
                         });
                     }
                     else {
@@ -275,6 +639,7 @@
                 .catch(error => {
                     removeBotMessageLoader();
                     console.error('Error:', error);
+                    addBotMessage("❌ An error occurred while fetching headlines. Please try again.");
                 });
         }
 
@@ -319,8 +684,10 @@
                 } catch (err) {
                     removeBotMessageLoader();
                     if (err.name === 'AbortError') {
+                        addBotMessage("⏰ The request took too long to process. Please try again with a shorter question.");
                         console.log('The request timed out.');
                     } else {
+                        addBotMessage("❌ An error occurred while processing your request. Please try again.");
                         console.log('Error:', err);
                     }
                 }
@@ -341,16 +708,17 @@
                 const data = await response.json();
                 removeBotMessageLoader();
                 if (Array.isArray(data.answer) && data.answer.length > 0) {
+                    addBotMessage("⚽ Here are the latest sports news:");
                     data.answer.forEach(answer => {
-                        addBotMessage("<b>" + answer['title'] + "</b>" + "<br\>" + answer['body']);
+                        addBotMessage("🏆 <b>" + answer['title'] + "</b><br><br>" + answer['body']);
                     });
                 } else {
-                    addBotMessage("Sorry, no sports news available at the moment.");
+                    addBotMessage("😔 Sorry, no sports news available at the moment. Please try again later!");
                 }
             } catch (error) {
                 removeBotMessageLoader();
                 console.error('Error:', error);
-                addBotMessage("An error occurred while fetching sports news.");
+                addBotMessage("❌ An error occurred while fetching sports news. Please try again.");
             }
         }
 
@@ -369,55 +737,61 @@
                 removeBotMessageLoader();
                 if (data.answer) {
                     if (data.answer.gainers.length > 0) {
-                        let gainersMessage = "<b>Top Gainers:</b><br>";
+                        let gainersMessage = "📈 <b>Top Gainers:</b><br><br>";
                         data.answer.gainers.forEach(stock => {
-                            gainersMessage += stock['name'] + " - Price: " + stock['price'] + "<br>";
+                            gainersMessage += "🟢 " + stock['name'] + " - " + stock['price'] + "<br>";
                         });
                         addBotMessage(gainersMessage);
                     }
                     if (data.answer.losers.length > 0) {
-                        let losersMessage = "<b>Top Losers:</b><br>";
+                        let losersMessage = "📉 <b>Top Losers:</b><br><br>";
                         data.answer.losers.forEach(stock => {
-                            losersMessage += stock['name'] + " - Price: " + stock['price'] + "<br>";
+                            losersMessage += "🔴 " + stock['name'] + " - " + stock['price'] + "<br>";
                         });
                         addBotMessage(losersMessage);
                     }
+                    if (data.answer.gainers.length === 0 && data.answer.losers.length === 0) {
+                        addBotMessage("📊 No stock data available at the moment. Please try again later!");
+                    }
                 } else {
-                    addBotMessage("Sorry, no stock values available at the moment.");
+                    addBotMessage("😔 Sorry, no stock values available at the moment. Please try again later!");
                 }
             } catch (error) {
                 removeBotMessageLoader();
                 console.error('Error:', error);
-                addBotMessage("An error occurred while fetching stock values.");
+                addBotMessage("❌ An error occurred while fetching stock values. Please try again.");
             }
         }
 
         function discussQuery() {
             const queryfield = document.getElementById('user-query');
-            const sendButton = document.querySelector('.text-blue-500');
+            const sendButton = document.querySelector('.send-button');
             const discussButton = document.querySelector('button[onclick="discussQuery()"]');
 
             if (queryfield.disabled) {
                 addUserMessage("Discuss");
-                addBotMessage("Yeah sure. You can ask questions about any news I have shared with you so far.");
-                queryfield.disabled = false;  // Enable the input field
-                sendButton.disabled = false;  // Enable the send button
-                discussButton.textContent = "End Discussion";  // Change button text
+                addBotMessage("🤔 Yeah sure! You can ask questions about any news I have shared with you so far. What would you like to know more about?");
+                queryfield.disabled = false;
+                sendButton.disabled = false;
+                discussButton.innerHTML = '<i class="fas fa-times"></i> End Discussion';
+                queryfield.placeholder = "Ask me about the news we discussed...";
             } else {
                 addUserMessage("End Discussion");
-                addBotMessage("Discussion ended. You can no longer ask questions.");
-                queryfield.disabled = true;  // Disable the input field
-                sendButton.disabled = true;  // Disable the send button
-                discussButton.textContent = "Discuss";  // Change button text
+                addBotMessage("👋 Discussion ended. Feel free to explore more news categories using the buttons below!");
+                queryfield.disabled = true;
+                sendButton.disabled = true;
+                discussButton.innerHTML = '<i class="fas fa-comments"></i> Discuss';
+                queryfield.placeholder = "Choose a category above to get started...";
             }
             queryfield.focus();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const queryfield = document.getElementById('user-query');
-            const sendButton = document.querySelector('.text-blue-500');
-            queryfield.disabled = true;  // Disable the input field by default
-            sendButton.disabled = true;  // Disable the send button by default
+            const sendButton = document.querySelector('.send-button');
+            queryfield.disabled = true;
+            sendButton.disabled = true;
+            queryfield.placeholder = "Choose a category above to get started...";
         });
 
     </script>
